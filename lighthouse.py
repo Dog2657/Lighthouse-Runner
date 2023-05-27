@@ -1,9 +1,10 @@
 import subprocess
 import platform
 import sys 
+import re
 import os
 
-
+urlPattern = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
 
 def runCommand(*args, errorMessage: str = ''):
     try:
@@ -47,14 +48,14 @@ def log(message: str):
     print('\n')
     print(message)
 
-url = input('Website url: ')
+urls = [url for item in sys.argv[1:] for url in re.findall(urlPattern, item)]
 
 if(not check_npm_package_installation('lighthouse')):
     log("Installing google lighthouse by npm:")
     runCommand(forceCommand, 'npm', 'install', '-g', 'lighthouse')
 
 log('Running lighthouse:')
-runCommand('lighthouse', '--view', '--output-path=./lighthouse.html', url)
+runCommand('lighthouse', '--view', '--output-path=./lighthouse.html', urls[0])
 
 if(hasArg('delete')):
     log('Clearing lighthouse.html:')
